@@ -23,9 +23,7 @@ contract DestructContract is Script {
         deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
     }
 
-    function setDestructor(address admin, AdminUpgradeabilityProxy proxy)
-        external
-    {
+    function run(address admin, AdminUpgradeabilityProxy proxy) external {
         vm.startBroadcast(admin);
         Destructor destructor = new Destructor();
         proxy.upgradeTo(address(destructor));
