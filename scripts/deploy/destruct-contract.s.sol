@@ -17,13 +17,21 @@ contract Destructor {
  * A utility script to destruct a contract
  */
 contract DestructContract is Script {
-    /**
-     * @notice main function that will be run by forge
-     */
-    function run(address admin, AdminUpgradeabilityProxy proxy) external {
+    uint256 private deployerPrivateKey;
+
+    function setUp() public {
+        deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+    }
+
+    function setDestructor(address admin, AdminUpgradeabilityProxy proxy)
+        external
+    {
         vm.startBroadcast(admin);
         Destructor destructor = new Destructor();
         proxy.upgradeTo(address(destructor));
+        vm.stopBroadcast();
+
+        vm.startBroadcast(deployerPrivateKey);
         Destructor(address(proxy)).destruct();
         vm.stopBroadcast();
     }
